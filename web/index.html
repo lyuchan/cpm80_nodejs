@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>智慧電表</title>
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1, shrink-to-fit=no, maximum-scale=1.0, user-scalable=0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"
+        integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous">
+        </script>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="style.css">
+
+
+</head>
+
+<body id="back" style="background: #000">
+    <h1>智慧電表</h1>
+    <table class="pctable">
+        <tr>
+            <td>電壓</td>
+            <td>電流</td>
+        </tr>
+        <tr>
+            <td id="vtable" class="data">100 V</td>
+            <td id="itable" class="data">100 A</td>
+        </tr>
+        <tr>
+            <td>功率</td>
+            <td>頻率</td>
+        </tr>
+        <tr>
+            <td id="wtable" class="data">100 W</td>
+            <td id="ftable" class="data">60 HZ</td>
+        </tr>
+    </table>
+
+    <table class="mobiletable">
+        <tr>
+            <td>電壓</td>
+        </tr>
+        <tr id="vtablem" class="data">
+            <td></td>
+        </tr>
+        <tr>
+            <td>電流</td>
+        </tr>
+        <tr id="itablem" class="data">
+            <td></td>
+        </tr>
+        <tr>
+            <td>功率</td>
+        </tr>
+        <tr id="wtablem" class="data">
+            <td></td>
+        </tr>
+        <tr>
+            <td>頻率</td>
+        </tr>
+
+        <tr id="ftablem" class="data">
+            <td></td>
+        </tr>
+
+    </table>
+
+</body>
+<script>
+    let urlold = window.location.href;//取得當前網址
+    let url = urlold.replace("https://", "");//去除https
+    url = url.replace("http://", "");//去除http
+    url = url.replace("out", "");//去除/
+    url = url.split('/')[0];
+    url = url.replace("/", "");//去除/
+    url = "ws://" + url;//加入ws://
+    let first = 0;
+    const socket = new WebSocket(url);
+    //socket.reconnectDecay = 1;
+    socket.onopen = () => {
+
+    }
+    socket.addEventListener('message', event => {
+        // console.log('Message from server ', event.data);
+        const data = JSON.parse(event.data);
+        document.getElementById("vtable").innerHTML = `${data.v}V`
+        document.getElementById("itable").innerHTML = `${data.i}A`
+        document.getElementById("wtable").innerHTML = `${data.p}W`
+        document.getElementById("ftable").innerHTML = `${data.f}HZ`
+        document.getElementById("vtablem").innerHTML = `${data.v}V`
+        document.getElementById("itablem").innerHTML = `${data.i}A`
+        document.getElementById("wtablem").innerHTML = `${data.p}W`
+        document.getElementById("ftablem").innerHTML = `${data.f}HZ`
+       /* if (data.sw == 16) {
+            //r
+            if (data.i > 0) {
+                //g
+                document.getElementById("immmmmmm").src = "./img/g.svg"
+            } else {
+                //y
+                document.getElementById("immmmmmm").src = "./img/y.svg"
+            }
+
+        } else {
+            document.getElementById("immmmmmm").src = "./img/r.svg"
+        }*/
+
+        // getData(data.v, data.i, data.p)
+    });
+    function send(data) {
+        socket.send(data);
+    }
+    function openrelay() {
+        send(JSON.stringify({ get: "open" }))
+    }
+    function colserelay() {
+        send(JSON.stringify({ get: "colse" }))
+    }
+
+
+
+
+</script>
+
+</html>
